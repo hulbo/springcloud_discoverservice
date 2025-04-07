@@ -12,6 +12,12 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Set Spring Profile') {
             steps {
                 script {
