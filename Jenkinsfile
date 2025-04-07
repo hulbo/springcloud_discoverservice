@@ -13,11 +13,10 @@ pipeline {
         IMAGE_TAG = "${params.USE_LATEST_TAG ? 'latest' : env.BUILD_NUMBER}"
         ACTIVE_PROFILE = ""
     }
-
     stages {
         stage('Set Spring Profile') {
-            steps {
-                script {
+                steps {
+                    script {
                     def branch = params.BRANCH
 
                     if (branch == 'main') {
@@ -35,9 +34,7 @@ pipeline {
                 }
             }
         }
-    }
 
-    stages {
         stage('Checkout') {
             steps {
                 git branch: "${params.BRANCH}",
