@@ -70,15 +70,16 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Docker-Hub_hulbo', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no aws-service << 'EOF'
-                            echo "\$PASSWORD" | docker login -u "\$USERNAME" --password-stdin
-                            docker pull ${env.FULL_IMAGE_NAME}
-                            docker stop ${env.IMAGE_NAME} || true
-                            docker rm ${env.IMAGE_NAME} || true
-                            docker run -d --name ${env.IMAGE_NAME} -p ${env.PORT} -e SPRING_PROFILES_ACTIVE=${env.ACTIVE_PROFILE} ${env.FULL_IMAGE_NAME}
-                            EOF
-                        """
+                        sh '''#!/bin/bash
+                        ssh -o StrictHostKeyChecking=no aws-service << 'EOF'
+                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                        docker pull ${DOCKER_HUL_ID}/${IMAGE_NAME}:${IMAGE_TAG}
+                        docker stop ${IMAGE_NAME} || true
+                        docker rm ${IMAGE_NAME} || true
+                        docker run -d --name ${IMAGE_NAME} -p ${PORT} -e SPRING_PROFILES_ACTIVE=${ACTIVE_PROFILE} ${DOCKER_HUL_ID}/${IMAGE_NAME}:${IMAGE_TAG}
+                        EOF
+                        '''
+
                     }
                 }
             }
