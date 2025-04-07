@@ -20,9 +20,8 @@ pipeline {
         stage('Set Spring Profile') {
             steps {
                 script {
-                    echo "▶ 선택된 브랜치: ${env.BRANCH_NAME}"
-
-
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    echo "▶ 선택된 브랜치: ${branch}"
                 }
             }
         }
