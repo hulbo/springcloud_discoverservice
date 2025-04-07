@@ -21,8 +21,6 @@ pipeline {
             steps {
                 script {
                     def branch = sh(script: "git branch -r --contains HEAD | grep origin/ | head -n 1 | sed 's@origin/@@'", returnStdout: true).trim()
-                    echo "▶ 선택된 브랜치: ${branch}"
-
                     def profile = 'local'
                     if (branch == 'main') {
                         profile = 'prod'
@@ -74,7 +72,7 @@ pipeline {
                     script {
                         sh """
                             ssh -o StrictHostKeyChecking=no aws-service << 'EOF'
-                            echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                            echo "\$PASSWORD" | docker login -u "\$USERNAME" --password-stdin
                             docker pull ${env.FULL_IMAGE_NAME}
                             docker stop ${env.IMAGE_NAME} || true
                             docker rm ${env.IMAGE_NAME} || true
