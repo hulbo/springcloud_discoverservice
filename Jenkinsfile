@@ -20,7 +20,7 @@ pipeline {
         stage('Set Spring Profile') {
             steps {
                 script {
-                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    def branch = sh(script: "git branch -r --contains HEAD | grep origin/ | head -n 1 | sed 's@origin/@@'", returnStdout: true).trim()
                     echo "▶ 선택된 브랜치: ${branch}"
                 }
             }
