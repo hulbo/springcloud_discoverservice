@@ -14,10 +14,11 @@ pipeline {
         stage('Set Spring Profile') {
             steps {
                 script {
+                    echo "▶ 선택된 브랜치: ${env.BRANCH_NAME}"
+
                     // git 명령어로 현재 브랜치 이름 추출
                     def branch = env.BRANCH_NAME
                     env.IMAGE_TAG = (branch == 'main') ? 'latest' : env.BUILD_NUMBER
-                    env.BRANCH = branch
 
                     def profile = 'local'
                     if (branch == 'main') {
