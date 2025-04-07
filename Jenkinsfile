@@ -88,17 +88,5 @@ pipeline {
                 }
             }
         }
-
-
-        stage('Set Spring Profile test') {
-            steps {
-                script {
-                    echo "▶ 선택된 브랜치: ${env.BRANCH}"
-                    echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
-                    echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
-                    echo "▶ Docker 전체 이미지 명: ${env.FULL_IMAGE_NAME}"
-                }
-            }
-        }
     }
 }
