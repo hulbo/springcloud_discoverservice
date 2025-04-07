@@ -88,6 +88,8 @@ pipeline {
                                 docker pull ${env.FULL_IMAGE_NAME}
 
                                 docker run -d --name ${env.IMAGE_NAME} -p ${env.PORT} -e SPRING_PROFILES_ACTIVE=${env.ACTIVE_PROFILE} ${env.FULL_IMAGE_NAME}
+
+                                docker image prune -f
                             '
                         """
                     }
