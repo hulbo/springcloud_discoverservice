@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools{
+        maven "Maven_3.9.9"
+    }
     environment {
         IMAGE_NAME = "hulbo/sc_discoverservice"
     }
