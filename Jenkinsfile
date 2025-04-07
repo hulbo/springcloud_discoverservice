@@ -35,6 +35,7 @@ pipeline {
 
                                         env.ACTIVE_PROFILE = profile
                                         env.BRANCH = branch
+                                        env.IMAGE_TAG = 'latest'
 
                                         echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
                                         echo "▶ 선택된 브랜치: ${env.BRANCH}"
