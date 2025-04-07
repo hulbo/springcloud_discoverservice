@@ -1,5 +1,5 @@
 # Spring Cloud로 개발하는 MSA
-## ecoomerce (Eureka Server) 
+## Eureka Server
 ### 1.Eureka Server의 주요 기능
 1. **서비스 등록 및 발견**: 각 마이크로서비스가 자신의 위치를 Eureka Server에 등록하고, 다른 서비스가 이를 검색하여 통신할 수 있습니다.
 2. **로드 밸런싱**: Eureka Client는 동적으로 서비스 목록을 가져오며, 이를 통해 클라이언트 측 로드 밸런싱이 가능합니다.
