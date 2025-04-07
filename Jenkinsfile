@@ -6,9 +6,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = "hulbo/sc_discoverservice"
-        IMAGE_TAG = ""
-        ACTIVE_PROFILE = ""
-        BRANCH = "";
     }
 
     stages {
@@ -36,16 +33,15 @@ pipeline {
                     // def tag = (branch == 'main') ? "${env.BUILD_NUMBER}" : 'latest'
                     def tag = 'latest'
 
-                    // withEnv로 다음 스테이지에서도 사용할 수 있도록 환경 변수 설정
-                    withEnv([
-                        "BRANCH=${branch}",
-                        "ACTIVE_PROFILE=${profile}",
-                        "IMAGE_TAG=${tag}"
-                    ]) {
-                        echo "▶ 선택된 브랜치: ${env.BRANCH}"
-                        echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
-                        echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
-                    }
+                    // 값을 다음 스테이지에서도 쓸 수 있도록 env에 직접 할당
+                    env.BRANCH = branch
+                    env.ACTIVE_PROFILE = profile
+                    env.IMAGE_TAG = tag
+
+                    echo "▶ 선택된 브랜치: ${env.BRANCH}"
+                    echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
+                    echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
+                    echo "▶ Docker 이미지 명: ${env.IMAGE_NAME}"
                 }
             }
         }
@@ -56,6 +52,7 @@ pipeline {
                     echo "▶ 선택된 브랜치: ${env.BRANCH}"
                     echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
                     echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
+                    echo "▶ Docker 이미지 명: ${env.IMAGE_NAME}"
                 }
             }
         }
