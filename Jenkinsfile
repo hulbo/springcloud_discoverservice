@@ -4,10 +4,6 @@ pipeline {
         maven "Maven_3.9.9"
     }
 
-    parameters {
-        booleanParam(name: 'USE_LATEST_TAG', defaultValue: true, description: '이미지 테그 latest 사용여부')
-    }
-
     environment {
         IMAGE_NAME = "hulbo/sc_discoverservice"
         IMAGE_TAG = ""
@@ -18,11 +14,11 @@ pipeline {
         stage('Set Spring Profile') {
             steps {
                 script {
-                    env.IMAGE_TAG = params.USE_LATEST_TAG ? 'latest' : env.BUILD_NUMBER
-
+                    // 브랜치명 기준 이미지 태그 설정 (ex: main -> latest, 나머지 -> 빌드번호)
                     def branch = env.BRANCH_NAME
-                    def profile = 'local'
+                    env.IMAGE_TAG = (branch == 'main') ? 'latest' : env.BUILD_NUMBER
 
+                    def profile = 'local'
                     if (branch == 'main') {
                         profile = 'prod'
                     } else if (branch == 'develop') {
