@@ -24,22 +24,38 @@ pipeline {
                     def branch = sh(script: "git branch -r --contains HEAD | grep origin/ | head -n 1 | sed 's@origin/@@'", returnStdout: true).trim()
                     echo "▶ 선택된 브랜치: ${branch}"
 
-                    def profile = 'local'
-                                        if (branch == 'main') {
-                                            profile = 'prod'
-                                        } else if (branch == 'develop') {
-                                            profile = 'dev'
-                                        } else if (branch == 'test') {
-                                            profile = 'test'
-                                        }
+                    if (branch == 'main') {
+                        profile = 'prod'
+                    } else if (branch == 'develop') {
+                        profile = 'dev'
+                    } else if (branch == 'test') {
+                        profile = 'test'
+                    }
 
-                                        env.ACTIVE_PROFILE = profile
-                                        env.BRANCH = branch
-                                        env.IMAGE_TAG = 'latest'
+                    // 운영은 빌드 넘버로 진행해서 백업 하게 변경
+                    // def tag = (branch == 'main') ? "${env.BUILD_NUMBER}" : 'latest'
+                    def tag = 'latest'
 
-                                        echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
-                                        echo "▶ 선택된 브랜치: ${env.BRANCH}"
-                                        echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
+                    // withEnv로 다음 스테이지에서도 사용할 수 있도록 환경 변수 설정
+                    withEnv([
+                        "BRANCH=${branch}",
+                        "ACTIVE_PROFILE=${profile}",
+                        "IMAGE_TAG=${tag}"
+                    ]) {
+                        echo "▶ 선택된 브랜치: ${env.BRANCH}"
+                        echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
+                        echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
+        stage('Set Spring Profile test') {
+            steps {
+                script {
+                    echo "▶ 선택된 브랜치: ${env.BRANCH}"
+                    echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
+                    echo "▶ Docker 이미지 태그: ${env.IMAGE_TAG}"
                 }
             }
         }
