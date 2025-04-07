@@ -70,20 +70,25 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Docker-Hub_hulbo', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        sh '''#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no aws-service << 'EOF'
-                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
-                        docker pull ${DOCKER_HUL_ID}/${IMAGE_NAME}:${IMAGE_TAG}
-                        docker stop ${IMAGE_NAME} || true
-                        docker rm ${IMAGE_NAME} || true
-                        docker run -d --name ${IMAGE_NAME} -p ${PORT} -e SPRING_PROFILES_ACTIVE=${ACTIVE_PROFILE} ${DOCKER_HUL_ID}/${IMAGE_NAME}:${IMAGE_TAG}
-                        EOF
-                        '''
+                        sh """
+                            ssh -o StrictHostKeyChecking=no aws-service '
+                                echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
 
+                                if docker ps -a --format "{{.Names}}" | grep -q "^${env.IMAGE_NAME}\$"; then
+                                    docker stop ${env.IMAGE_NAME}
+                                    docker rm ${env.IMAGE_NAME}
+                                fi
+
+                                docker pull ${env.FULL_IMAGE_NAME}:${env.IMAGE_TAG}
+
+                                docker run -d --name ${env.IMAGE_NAME} -p ${env.PORT} -e SPRING_PROFILES_ACTIVE=${env.ACTIVE_PROFILE} ${env.FULL_IMAGE_NAME}:${env.IMAGE_TAG}
+                            '
+                        """
                     }
                 }
             }
         }
+
 
         stage('Set Spring Profile test') {
             steps {
