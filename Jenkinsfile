@@ -4,8 +4,8 @@ pipeline {
         maven "Maven_3.9.9"
     }
     parameters {
+        string(name: 'BRANCH', defaultValue: 'main', description: 'Git 브랜치명 (예: main, develop, test 등)')
         booleanParam(name: 'USE_LATEST_TAG', defaultValue: true, description: '이미지 테그 latest 사용여부')
-        string(name: 'SPRING_PROFILE', defaultValue: 'prod', description: 'Spring active profile 설정')
     }
 
     environment {
@@ -18,7 +18,7 @@ pipeline {
         stage('Set Spring Profile') {
             steps {
                 script {
-                    def branch = env.BRANCH_NAME
+                    def branch = params.BRANCH
 
                     if (branch == 'main') {
                         env.ACTIVE_PROFILE = 'prod'
@@ -31,6 +31,7 @@ pipeline {
                     }
 
                     echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
+                    echo "▶ 선택된 브랜치: ${branch}"
                 }
             }
         }
@@ -39,7 +40,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
+                git branch: "${params.BRANCH}",
                     credentialsId: 'Git-Hub_hulbo',
                     url: 'https://github.com/hulbo/springcloud_discoverservice'
             }
