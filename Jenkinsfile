@@ -18,16 +18,18 @@ pipeline {
                 steps {
                     script {
                     def branch = params.BRANCH
+                    def profile = 'local'
 
                     if (branch == 'main') {
-                        env.ACTIVE_PROFILE = 'prod'
+                        profile = 'prod'
                     } else if (branch == 'develop') {
-                        env.ACTIVE_PROFILE = 'dev'
+                        profile = 'dev'
                     } else if (branch == 'test') {
-                        env.ACTIVE_PROFILE = 'test'
-                    } else {
-                        env.ACTIVE_PROFILE = 'local'
+                        profile = 'test'
                     }
+
+                    // 값을 다음 스테이지에서도 쓰기 위해 env에 저장
+                    env.ACTIVE_PROFILE = profile
 
                     echo "▶ 적용된 Spring Profile: ${env.ACTIVE_PROFILE}"
                     echo "▶ 선택된 브랜치: ${branch}"
@@ -66,6 +68,7 @@ pipeline {
 
         stage('Deploy to Remote Server') {
             steps {
+                def profile = env.ACTIVE_PROFILE
                 withCredentials([usernamePassword(credentialsId: 'Docker-Hub_hulbo', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ec2-user@43.201.25.43 << 'EOF'
@@ -73,7 +76,7 @@ pipeline {
                         docker pull ${IMAGE_NAME}:${IMAGE_TAG}
                         docker stop sc_discoverservice || true
                         docker rm sc_discoverservice || true
-                        docker run -d --name sc_discoverservice -p 8761:8761 -e SPRING_PROFILES_ACTIVE=${ACTIVE_PROFILE} ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker run -d --name sc_discoverservice -p 8761:8761 -e SPRING_PROFILES_ACTIVE=${profile} ${IMAGE_NAME}:${IMAGE_TAG}
                         EOF
                     """
                 }
