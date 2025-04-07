@@ -11,6 +11,12 @@ pipeline {
     }
 
     stages {
+        stage('Clean dangling Docker images') {
+            steps {
+                sh 'docker image prune -f'
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
