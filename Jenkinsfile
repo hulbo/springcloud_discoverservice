@@ -59,10 +59,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                try {
-                    sh "docker build -t ${env.FULL_IMAGE_NAME} ."
-                } catch (Exception e) {
-                    error "▶ Docker 이미지 빌드 실패: ${e.message}"
+                script {
+                    def result = sh(script: "docker build -t ${env.FULL_IMAGE_NAME} .", returnStatus: true)
+                    if (result != 0) {
+                        error "▶ Docker 이미지 빌드 실패!"
+                    }
                 }
             }
         }
